@@ -15,7 +15,9 @@ public class ResponseOrder {
     private Long productId;
     private String productName;
     private long price;
-    private boolean isSeller;
     private OrderStatus orderStatus;
     private LocalDateTime orderDateTime;
+    private String sellerName;
+    private String buyerName;
+    private boolean isSeller;
 }

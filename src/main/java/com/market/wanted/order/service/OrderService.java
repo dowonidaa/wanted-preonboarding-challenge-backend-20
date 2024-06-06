@@ -2,6 +2,7 @@ package com.market.wanted.order.service;
 
 import com.market.wanted.member.entity.Member;
 import com.market.wanted.member.service.MemberService;
+import com.market.wanted.common.dto.ApiResponse;
 import com.market.wanted.order.dto.OrderDto;
 import com.market.wanted.order.dto.ResponseOrder;
 import com.market.wanted.order.entity.Order;
@@ -11,11 +12,15 @@ import com.market.wanted.order.repository.OrderFindRepository;
 import com.market.wanted.order.repository.OrderRepository;
 import com.market.wanted.product.entity.Product;
 import com.market.wanted.product.entity.ProductStatus;
+import com.market.wanted.product.repository.ProductRepository;
 import com.market.wanted.product.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,13 +30,13 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MemberService memberService;
-    private final ProductService productService;
+    private final ProductRepository productRepository;
     private final OrderFindRepository orderFindRepository;
 
     @Transactional
-    public OrderDto createOrder(String username, Long productId) {
+    public ApiResponse createOrder(String username, Long productId) {
         Member buyer = memberService.findByUsername(username);
-        Product findProduct = productService.findById(productId);
+        Product findProduct = productRepository.findById(productId).orElseThrow(()->new EntityNotFoundException("상품을 못찾음"));
 
         if(findProduct.getStatus() == ProductStatus.SALE) {
             Order order = new Order(OrderStatus.RESERVATION, buyer, findProduct.getSeller());
@@ -42,13 +47,23 @@ public class OrderService {
                     .product(findProduct)
                     .build();
            order.addOrderItem(orderItem);
-            return new OrderDto(order.getId(),
-                    buyer.getId(),
-                    findProduct.getSeller().getId(),
-                    findProduct.getId(),
-                    findProduct.getPrice(),
-                    findProduct.getProductName(),
-                    order.getOrderStatus());
+            return ApiResponse.builder()
+                    .data(
+                            ResponseOrder.builder()
+                                    .orderStatus(order.getOrderStatus())
+                                    .orderId(order.getId())
+                                    .orderDateTime(LocalDateTime.now())
+                                    .sellerId(findProduct.getSeller().getId())
+                                    .sellerName(findProduct.getSeller().getUsername())
+                                    .buyerId(buyer.getId())
+                                    .buyerName(buyer.getUsername())
+                                    .price(orderItem.getPrice())
+                                    .productName(findProduct.getProductName())
+                                    .productId(findProduct.getId())
+                                    .isSeller(isSeller(order.getSeller().getUsername(), username))
+                                    .build()
+                    )
+                    .status("success").build();
         }
         return null;
 
@@ -80,14 +95,14 @@ public class OrderService {
     }
 
     public List<OrderDto> findAllBySellerEmail(String email) {
-        return orderFindRepository.findAllBySellerEmail(email);
+        return orderFindRepository.findAllBySellerName(email);
     }
     public List<OrderDto> findAllByBuyerEmail(String email) {
-        return orderFindRepository.findAllByBuyerEmail(email);
+        return orderFindRepository.findAllByBuyerName(email);
     }
 
     public ResponseOrder findResponseById(Long orderId, String username) {
-        Order order = orderRepository.findById(orderId).orElse(null);
+        Order order = orderRepository.findById(orderId).orElseThrow();
         return ResponseOrder.builder()
                 .orderId(order.getId())
                 .sellerId(order.getSeller().getId())
@@ -95,9 +110,16 @@ public class OrderService {
                 .orderStatus(order.getOrderStatus())
                 .productName(order.getOrderItem().getProduct().getProductName())
                 .productId(order.getOrderItem().getProduct().getId())
-                .isSeller(username.equals(order.getSeller().getUsername()))
                 .orderDateTime(order.getCreateDate())
+                .buyerName(order.getBuyer().getUsername())
+                .sellerName(order.getSeller().getUsername())
+                .price(order.getOrderItem().getPrice())
+                .isSeller(isSeller(order.getSeller().getUsername(), username))
                 .build();
+    }
+
+    private boolean isSeller(String seller, String username) {
+        return seller.equals(username);
     }
 
 }

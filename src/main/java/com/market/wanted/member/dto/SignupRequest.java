@@ -23,6 +23,7 @@ public class SignupRequest {
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .name(name)
+                .role("ROLE_USER")
                 .build();
     }
 }

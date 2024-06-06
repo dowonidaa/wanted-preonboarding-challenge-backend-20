@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/login","/api/auth/**").permitAll()
                         .requestMatchers("/reissue").permitAll()
                         .requestMatchers("/api/products/**").permitAll()
+                        .requestMatchers("/api/products/add").authenticated()
                         .requestMatchers("/api/members/signup").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()

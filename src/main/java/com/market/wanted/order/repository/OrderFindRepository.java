@@ -1,11 +1,14 @@
 package com.market.wanted.order.repository;
 
 import com.market.wanted.order.dto.OrderDto;
-import com.market.wanted.order.entity.Order;
+import com.market.wanted.order.dto.TransactionDetail;
 
 import java.util.List;
 
 public interface OrderFindRepository {
-    List<OrderDto> findAllBySellerEmail(String email);
-    List<OrderDto> findAllByBuyerEmail(String email);
+    List<OrderDto> findAllBySellerName(String username);
+    List<OrderDto> findAllByBuyerName(String username);
+
+    List<TransactionDetail> findOrdersBySellerName(Long productId, String sellerName);
+    List<TransactionDetail> findOrdersByBuyerName(Long productId, String sellerName);
 }

@@ -1,9 +1,11 @@
 package com.market.wanted.order.controller;
 
 import com.market.wanted.auth.dto.CustomUserDetails;
-import com.market.wanted.order.dto.CreateOrder;
+import com.market.wanted.common.dto.ApiResponse;
+import com.market.wanted.order.dto.OrderRequest;
 import com.market.wanted.order.dto.OrderDto;
 import com.market.wanted.order.dto.ResponseOrder;
+import com.market.wanted.order.entity.Order;
 import com.market.wanted.order.entity.OrderStatus;
 import com.market.wanted.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +25,14 @@ public class OrderController {
     private final OrderService orderService;
 
     //주문생성
-    @PostMapping
-    public ResponseEntity<OrderDto> createOrder(@Validated CreateOrder order, @AuthenticationPrincipal CustomUserDetails user) {
-
-        OrderDto createOder = orderService.createOrder(user.getUsername(), order.getProductId());
-        return ResponseEntity.ok(createOder);
+    @PostMapping("/add")
+    public ResponseEntity<?> createOrder(@Validated @RequestBody OrderRequest order, @AuthenticationPrincipal CustomUserDetails user) {
+        try {
+            ApiResponse response = orderService.createOrder(user.getUsername(), order.getProductId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.builder().status("error").message(e.getMessage()));
+        }
     }
 
     //구매자 주문조회
@@ -38,7 +43,7 @@ public class OrderController {
     }
 
     // 판매자 주문조회
-    @GetMapping("/sales")
+    @GetMapping("/seller")
     public ResponseEntity<List<OrderDto>> orders(@AuthenticationPrincipal CustomUserDetails user) {
         List<OrderDto> orderDtos = orderService.findAllBySellerEmail(user.getUsername());
         return ResponseEntity.ok(orderDtos);
@@ -53,7 +58,7 @@ public class OrderController {
     }
 
     // 주문 상세내역 - 판매자
-    @GetMapping("/sales/{orderId}")
+    @GetMapping("/seller/{orderId}")
     public ResponseEntity<ResponseOrder> getSalesOrder(@PathVariable("orderId") Long orderId, @AuthenticationPrincipal CustomUserDetails user) {
         ResponseOrder responseOrder = orderService.findResponseById(orderId, user.getUsername());
         return ResponseEntity.ok(responseOrder);
@@ -61,10 +66,12 @@ public class OrderController {
 
 
     //판매자 주문 승인
-    @PatchMapping("/sales/{orderId}")
+    @PatchMapping("/seller/{orderId}")
     public ResponseEntity<String> orderConfirm(@PathVariable("orderId") Long orderId, @AuthenticationPrincipal CustomUserDetails user) {
-        OrderStatus orderStatus = orderService.findById(orderId).getOrderStatus();
-        if (orderStatus == OrderStatus.RESERVATION) {
+        Order order = orderService.findById(orderId);
+        OrderStatus orderStatus = order.getOrderStatus();
+        String seller = order.getSeller().getUsername();
+        if (orderStatus == OrderStatus.RESERVATION && user.getUsername().equals(seller)) {
             orderService.orderConfirm(user.getUsername(), orderId);
             return ResponseEntity.ok("주문이 승인 되었습니다.");
         }else{

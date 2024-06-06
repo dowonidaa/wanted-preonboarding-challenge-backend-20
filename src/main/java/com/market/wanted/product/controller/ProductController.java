@@ -1,11 +1,16 @@
 package com.market.wanted.product.controller;
 
+import com.market.wanted.common.dto.ApiResponse;
 import com.market.wanted.product.dto.AddProduct;
 import com.market.wanted.product.dto.ProductDto;
+import com.market.wanted.product.entity.Product;
 import com.market.wanted.product.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,15 +32,20 @@ public class ProductController {
 
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> productList() {
-        List<ProductDto> productDtos = productService.findAll();
-        return ResponseEntity.ok(productDtos);
+    public ResponseEntity<ApiResponse> productList() {
+        ApiResponse response = productService.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDto> getProduct(@PathVariable("productId") Long productId) {
-        ProductDto findProductDto = productService.findDtoById(productId);
-        return ResponseEntity.ok(findProductDto);
+    public ResponseEntity<?> getProduct(@PathVariable("productId") Long productId, @AuthenticationPrincipal UserDetails user) throws Exception {
+        if (user==null){
+            ProductDto productDto = productService.findById(productId);
+            ApiResponse response = ApiResponse.builder().status("success").data(productDto).build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        ApiResponse response = productService.findDtoById(productId, user.getUsername());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }
