@@ -3,8 +3,8 @@ package com.market.wanted.order.service;
 import com.market.wanted.member.entity.Member;
 import com.market.wanted.member.service.MemberService;
 import com.market.wanted.common.dto.ApiResponse;
-import com.market.wanted.order.dto.OrderDto;
 import com.market.wanted.order.dto.ResponseOrder;
+import com.market.wanted.order.dto.ResponseOrderDetail;
 import com.market.wanted.order.entity.Order;
 import com.market.wanted.order.entity.OrderItem;
 import com.market.wanted.order.entity.OrderStatus;
@@ -13,10 +13,8 @@ import com.market.wanted.order.repository.OrderRepository;
 import com.market.wanted.product.entity.Product;
 import com.market.wanted.product.entity.ProductStatus;
 import com.market.wanted.product.repository.ProductRepository;
-import com.market.wanted.product.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +47,7 @@ public class OrderService {
            order.addOrderItem(orderItem);
             return ApiResponse.builder()
                     .data(
-                            ResponseOrder.builder()
+                            ResponseOrderDetail.builder()
                                     .orderStatus(order.getOrderStatus())
                                     .orderId(order.getId())
                                     .orderDateTime(LocalDateTime.now())
@@ -78,9 +76,9 @@ public class OrderService {
 
     }
 
-    public OrderDto findDtoById(Long orderId) {
+    public ResponseOrder findDtoById(Long orderId) {
         Order order = orderRepository.findById(orderId).orElse(null);
-        return new OrderDto(order.getId(),
+        return new ResponseOrder(order.getId(),
                 order.getSeller().getId(),
                 order.getBuyer().getId(),
                 order.getOrderItem().getProduct().getId(),
@@ -94,16 +92,16 @@ public class OrderService {
         return orderRepository.findById(orderId).orElse(null);
     }
 
-    public List<OrderDto> findAllBySellerEmail(String email) {
+    public List<ResponseOrder> findAllBySellerEmail(String email) {
         return orderFindRepository.findAllBySellerName(email);
     }
-    public List<OrderDto> findAllByBuyerEmail(String email) {
+    public List<ResponseOrder> findAllByBuyerEmail(String email) {
         return orderFindRepository.findAllByBuyerName(email);
     }
 
-    public ResponseOrder findResponseById(Long orderId, String username) {
+    public ResponseOrderDetail findResponseById(Long orderId, String username) {
         Order order = orderRepository.findById(orderId).orElseThrow();
-        return ResponseOrder.builder()
+        return ResponseOrderDetail.builder()
                 .orderId(order.getId())
                 .sellerId(order.getSeller().getId())
                 .buyerId(order.getBuyer().getId())

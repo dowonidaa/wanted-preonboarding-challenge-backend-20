@@ -6,8 +6,8 @@ import com.market.wanted.member.repository.MemberRepository;
 import com.market.wanted.order.dto.TransactionDetail;
 import com.market.wanted.order.repository.OrderFindRepository;
 import com.market.wanted.product.dto.AddProduct;
-import com.market.wanted.product.dto.ProductDto;
 import com.market.wanted.product.dto.ResponseProduct;
+import com.market.wanted.product.dto.ResponseProductDetail;
 import com.market.wanted.product.entity.Product;
 import com.market.wanted.product.entity.ProductStatus;
 import com.market.wanted.product.repository.ProductRepository;
@@ -30,7 +30,7 @@ public class ProductService {
         boolean isSeller = findProduct.getSeller().getUsername().equals(username);
         if (findProduct.getStatus().equals(ProductStatus.SALE)) {
 
-            ResponseProduct response = ResponseProduct.builder()
+            ResponseProductDetail response = ResponseProductDetail.builder()
                     .productName(findProduct.getProductName())
                     .price(findProduct.getPrice())
                     .isSeller(isSeller)
@@ -44,7 +44,7 @@ public class ProductService {
 
         if (isSeller) {
             List<TransactionDetail> transactionList = orderFindRepository.findOrdersBySellerName(productId, username);
-            ResponseProduct response = ResponseProduct.builder()
+            ResponseProductDetail response = ResponseProductDetail.builder()
                     .productName(findProduct.getProductName())
                     .price(findProduct.getPrice())
                     .isSeller(isSeller)
@@ -56,7 +56,7 @@ public class ProductService {
             return ApiResponse.builder().status("success").data(response).build();
         } else {
             List<TransactionDetail> transactionDetailList = orderFindRepository.findOrdersByBuyerName(productId, username);
-            ResponseProduct response = ResponseProduct.builder()
+            ResponseProductDetail response = ResponseProductDetail.builder()
                     .productName(findProduct.getProductName())
                     .price(findProduct.getPrice())
                     .isSeller(isSeller)
@@ -72,9 +72,9 @@ public class ProductService {
 
     public ApiResponse findAll() {
         List<Product> products = productRepository.findAll();
-        List<ProductDto> productDtos = new ArrayList<>();
+        List<ResponseProduct> productDtos = new ArrayList<>();
         for (Product product : products) {
-            ProductDto productDto = ProductDto.builder()
+            ResponseProduct productDto = ResponseProduct.builder()
                     .productId(product.getId())
                     .productName(product.getProductName())
                     .status(product.getStatus())
@@ -86,9 +86,9 @@ public class ProductService {
 
     }
 
-    public ProductDto findById(Long productId) {
+    public ResponseProduct findById(Long productId) {
         Product product = productRepository.findById(productId).orElse(null);
-        return ProductDto.builder()
+        return ResponseProduct.builder()
                 .productId(product.getId())
                 .sellerName(product.getSeller().getUsername())
                 .price(product.getPrice())

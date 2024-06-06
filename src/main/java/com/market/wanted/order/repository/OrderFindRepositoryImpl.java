@@ -1,8 +1,8 @@
 package com.market.wanted.order.repository;
 
 import com.market.wanted.member.entity.QMember;
-import com.market.wanted.order.dto.OrderDto;
-import com.market.wanted.order.dto.QOrderDto;
+import com.market.wanted.order.dto.QResponseOrder;
+import com.market.wanted.order.dto.ResponseOrder;
 import com.market.wanted.order.dto.QTransactionDetail;
 import com.market.wanted.order.dto.TransactionDetail;
 import com.market.wanted.order.entity.Order;
@@ -26,10 +26,10 @@ public class OrderFindRepositoryImpl implements OrderFindRepository{
     }
 
     @Override
-    public List<OrderDto> findAllBySellerName(String username) {
+    public List<ResponseOrder> findAllBySellerName(String username) {
         QMember seller = new QMember("seller");
         return queryFactory
-                .select(new QOrderDto(order.id.as("orderId"),
+                .select(new QResponseOrder(order.id.as("orderId"),
                         order.seller.id.as("sellerId"),
                         order.buyer.id.as("buyerId"),
                         product.id.as("productId"),
@@ -46,10 +46,10 @@ public class OrderFindRepositoryImpl implements OrderFindRepository{
     }
 
     @Override
-    public List<OrderDto> findAllByBuyerName(String username) {
+    public List<ResponseOrder> findAllByBuyerName(String username) {
         QMember seller = new QMember("seller");
         return queryFactory
-                .select(new QOrderDto(order.id.as("orderId"),
+                .select(new QResponseOrder(order.id.as("orderId"),
                         order.seller.id.as("sellerId"),
                         order.buyer.id.as("buyerId"),
                         product.id.as("productId"),

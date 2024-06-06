@@ -2,8 +2,7 @@ package com.market.wanted.product.controller;
 
 import com.market.wanted.common.dto.ApiResponse;
 import com.market.wanted.product.dto.AddProduct;
-import com.market.wanted.product.dto.ProductDto;
-import com.market.wanted.product.entity.Product;
+import com.market.wanted.product.dto.ResponseProduct;
 import com.market.wanted.product.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,7 +37,7 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProduct(@PathVariable("productId") Long productId, @AuthenticationPrincipal UserDetails user) throws Exception {
         if (user==null){
-            ProductDto productDto = productService.findById(productId);
+            ResponseProduct productDto = productService.findById(productId);
             ApiResponse response = ApiResponse.builder().status("success").data(productDto).build();
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }

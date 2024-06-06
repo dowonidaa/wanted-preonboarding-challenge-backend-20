@@ -2,11 +2,7 @@ package com.market.wanted.order.service;
 
 import com.market.wanted.member.entity.Member;
 import com.market.wanted.member.repository.MemberRepository;
-import com.market.wanted.order.dto.OrderDto;
-import com.market.wanted.order.entity.Order;
-import com.market.wanted.order.entity.OrderStatus;
 import com.market.wanted.product.entity.Product;
-import com.market.wanted.product.entity.ProductStatus;
 import com.market.wanted.product.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -15,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

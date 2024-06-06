@@ -1,0 +1,23 @@
+package com.market.wanted.order.dto;
+
+import com.market.wanted.order.entity.OrderStatus;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+public class ResponseOrderDetail {
+    private Long orderId;
+    private Long sellerId;
+    private Long buyerId;
+    private Long productId;
+    private String productName;
+    private long price;
+    private OrderStatus orderStatus;
+    private LocalDateTime orderDateTime;
+    private String sellerName;
+    private String buyerName;
+    private boolean isSeller;
+}

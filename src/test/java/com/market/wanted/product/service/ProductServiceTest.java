@@ -1,20 +1,9 @@
 package com.market.wanted.product.service;
 
-import com.market.wanted.member.entity.Member;
-import com.market.wanted.member.repository.MemberRepository;
-import com.market.wanted.product.dto.ProductDto;
-import com.market.wanted.product.entity.Product;
-import com.market.wanted.product.repository.ProductRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

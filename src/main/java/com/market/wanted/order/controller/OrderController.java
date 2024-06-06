@@ -3,8 +3,8 @@ package com.market.wanted.order.controller;
 import com.market.wanted.auth.dto.CustomUserDetails;
 import com.market.wanted.common.dto.ApiResponse;
 import com.market.wanted.order.dto.OrderRequest;
-import com.market.wanted.order.dto.OrderDto;
 import com.market.wanted.order.dto.ResponseOrder;
+import com.market.wanted.order.dto.ResponseOrderDetail;
 import com.market.wanted.order.entity.Order;
 import com.market.wanted.order.entity.OrderStatus;
 import com.market.wanted.order.service.OrderService;
@@ -37,30 +37,30 @@ public class OrderController {
 
     //구매자 주문조회
     @GetMapping("/my")
-    public ResponseEntity<List<OrderDto>> myOrders(@AuthenticationPrincipal CustomUserDetails user) {
-        List<OrderDto> orderDtos = orderService.findAllByBuyerEmail(user.getUsername());
+    public ResponseEntity<List<ResponseOrder>> myOrders(@AuthenticationPrincipal CustomUserDetails user) {
+        List<ResponseOrder> orderDtos = orderService.findAllByBuyerEmail(user.getUsername());
         return ResponseEntity.ok(orderDtos);
     }
 
     // 판매자 주문조회
     @GetMapping("/seller")
-    public ResponseEntity<List<OrderDto>> orders(@AuthenticationPrincipal CustomUserDetails user) {
-        List<OrderDto> orderDtos = orderService.findAllBySellerEmail(user.getUsername());
+    public ResponseEntity<List<ResponseOrder>> orders(@AuthenticationPrincipal CustomUserDetails user) {
+        List<ResponseOrder> orderDtos = orderService.findAllBySellerEmail(user.getUsername());
         return ResponseEntity.ok(orderDtos);
     }
 
 
     // 주문 상세내역 - 구매자
     @GetMapping("/my/{orderId}")
-    public ResponseEntity<ResponseOrder> getMyOrder(@PathVariable("orderId") Long orderId, @AuthenticationPrincipal CustomUserDetails user) {
-        ResponseOrder responseOrder = orderService.findResponseById(orderId, user.getUsername());
+    public ResponseEntity<ResponseOrderDetail> getMyOrder(@PathVariable("orderId") Long orderId, @AuthenticationPrincipal CustomUserDetails user) {
+        ResponseOrderDetail responseOrder = orderService.findResponseById(orderId, user.getUsername());
         return ResponseEntity.ok(responseOrder);
     }
 
     // 주문 상세내역 - 판매자
     @GetMapping("/seller/{orderId}")
-    public ResponseEntity<ResponseOrder> getSalesOrder(@PathVariable("orderId") Long orderId, @AuthenticationPrincipal CustomUserDetails user) {
-        ResponseOrder responseOrder = orderService.findResponseById(orderId, user.getUsername());
+    public ResponseEntity<ResponseOrderDetail> getSalesOrder(@PathVariable("orderId") Long orderId, @AuthenticationPrincipal CustomUserDetails user) {
+        ResponseOrderDetail responseOrder = orderService.findResponseById(orderId, user.getUsername());
         return ResponseEntity.ok(responseOrder);
     }
 
