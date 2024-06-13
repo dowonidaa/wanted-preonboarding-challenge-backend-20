@@ -69,12 +69,6 @@ public class OrderFindRepositoryImpl implements OrderFindRepository{
     public List<TransactionDetail> findOrdersBySellerName(Long productId, String sellerName) {
         QMember seller = new QMember("seller");
         QMember buyer = new QMember("buyer");
-        Order order1 = queryFactory.select(order)
-                .from(order)
-                .join(order.orderItem.product, product)
-                .where(product.id.eq(productId))
-                .fetchOne();
-
         return queryFactory.select(
                 new QTransactionDetail(order.id.as("orderId"),
                         order.buyer.username.as("username"),
@@ -85,10 +79,18 @@ public class OrderFindRepositoryImpl implements OrderFindRepository{
                 .join(order.buyer, buyer)
                 .join(order.orderItem, orderItem)
                 .join(orderItem.product, product)
-                .where(seller.username.eq(sellerName).and(buyer.username.eq(order1.getBuyer().getUsername())))
+                .where(seller.username.eq(sellerName).and(buyer.username.eq(
+                        queryFactory.select(buyer.username)
+                                .from(order)
+                                .join(order.orderItem.product, product)
+                                .join(order.buyer, buyer)
+                                .where(product.id.eq(productId))
+                                .fetchOne()
+                )))
                 .fetch();
     }
 
+    @Override
     public List<TransactionDetail> findOrdersByBuyerName(Long productId, String buyerName) {
         QMember seller = new QMember("seller");
         QMember buyer = new QMember("buyer");
