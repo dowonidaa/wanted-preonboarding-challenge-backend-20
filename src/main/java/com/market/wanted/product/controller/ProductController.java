@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<?> getProduct(@PathVariable("productId") Long productId, @AuthenticationPrincipal UserDetails user) throws Exception {
+    public ResponseEntity<?> getProduct(@PathVariable("productId") Long productId, @AuthenticationPrincipal UserDetails user) {
         if (user==null){
             ResponseProduct productDto = productService.findById(productId);
             ApiResponse response = ApiResponse.builder().status("success").data(productDto).build();

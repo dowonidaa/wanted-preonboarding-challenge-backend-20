@@ -30,6 +30,7 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     @Comment("회원id")
     private String username;
+
     private String password;
     private String role = "ROLE_USER";
     private String name;

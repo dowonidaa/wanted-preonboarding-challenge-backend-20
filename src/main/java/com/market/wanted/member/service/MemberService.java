@@ -15,9 +15,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public Member findById(Long memberId) {
-        return memberRepository.findById(memberId).orElse(null);
-    }
 
     public Member findByUsername(String username) {
         return memberRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 회원입니다."));

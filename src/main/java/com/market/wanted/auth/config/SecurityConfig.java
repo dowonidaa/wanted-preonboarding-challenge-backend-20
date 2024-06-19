@@ -45,8 +45,8 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/reissue").permitAll()
                         .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/api/products/add").authenticated()
                         .requestMatchers("/api/members/signup").permitAll()

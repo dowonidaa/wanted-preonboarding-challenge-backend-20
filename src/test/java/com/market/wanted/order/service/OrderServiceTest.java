@@ -1,16 +1,22 @@
 package com.market.wanted.order.service;
 
+import com.market.wanted.common.dto.ApiResponse;
 import com.market.wanted.member.entity.Member;
 import com.market.wanted.member.repository.MemberRepository;
+import com.market.wanted.order.entity.OrderStatus;
+import com.market.wanted.order.repository.OrderRepository;
 import com.market.wanted.product.entity.Product;
 import com.market.wanted.product.repository.ProductRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -24,9 +30,8 @@ class OrderServiceTest {
 
     @Autowired
     OrderService orderService;
-
-    @PersistenceContext
-    EntityManager em;
+    @Autowired
+    OrderRepository orderRepository;
 
     @Test
     void createOrder() {
@@ -38,12 +43,11 @@ class OrderServiceTest {
         Product product = new Product("itemA", 1000, buyer);
         productRepository.save(product);
         //when
-//        OrderDto order = orderService.createOrder(seller.getUsername(), product.getId());
+        ApiResponse order = orderService.createOrder(seller.getUsername(), product.getId());
 
         //then
-//        assertThat(order.getBuyerId()).isEqualTo(buyer.getId());
-//        assertThat(order.getSellerId()).isEqualTo(seller.getId());
-//        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.RESERVATION);
+        assertThat(order.getStatus()).isEqualTo("success");
+        assertThat(order.getData()).isNotNull();
     }
 
     @Test

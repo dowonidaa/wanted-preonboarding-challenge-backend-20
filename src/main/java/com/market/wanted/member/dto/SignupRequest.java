@@ -1,6 +1,7 @@
 package com.market.wanted.member.dto;
 
 import com.market.wanted.member.entity.Member;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,7 +9,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Data
 public class SignupRequest {
 
+    @NotNull
     private String username;
+
+    @NotNull
     private String password;
     private String name;
 
