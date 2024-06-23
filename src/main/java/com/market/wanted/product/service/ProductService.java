@@ -28,7 +28,7 @@ public class ProductService {
     private final MemberRepository memberRepository;
     private final OrderFindRepository orderFindRepository;
 
-    public ApiResponse findDtoById(Long productId, String username) {
+    public ApiResponse<ResponseProductDetail> findDtoById(Long productId, String username) {
         Product findProduct = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("제품을 찾을수 없습니다."));
         boolean isSeller = findProduct.getSeller().getUsername().equals(username);
         if (findProduct.getStatus().equals(ProductStatus.SALE)) {
@@ -42,22 +42,22 @@ public class ProductService {
                     .productId(findProduct.getId())
                     .build();
 
-            return ApiResponse.builder().status("success").data(response).build();
+            return ApiResponse.<ResponseProductDetail>builder().status("success").data(response).build();
         }
 
         if (isSeller) {
             List<TransactionDetail> transactionDetails = orderFindRepository.findOrdersBySellerName(productId, username);
             ResponseProductDetail response = buildProductDetail(findProduct, isSeller, transactionDetails);
-            return ApiResponse.builder().status("success").data(response).build();
+            return ApiResponse.<ResponseProductDetail>builder().status("success").data(response).build();
         } else {
             List<TransactionDetail> transactionDetails = orderFindRepository.findOrdersByBuyerName(productId, username);
             ResponseProductDetail response = buildProductDetail(findProduct, isSeller, transactionDetails);
-            return ApiResponse.builder().status("success").data(response).build();
+            return ApiResponse.<ResponseProductDetail>builder().status("success").data(response).build();
         }
     }
 
 
-    public ApiResponse findAll() {
+    public ApiResponse<List<ResponseProduct>> findAll() {
         List<Product> products = productRepository.findAll();
         List<ResponseProduct> responseList = new ArrayList<>();
         for (Product product : products) {
@@ -69,7 +69,7 @@ public class ProductService {
                     .sellerName(product.getSeller().getUsername()).build();
             responseList.add(productDto);
         }
-        return ApiResponse.builder().status("success").data(responseList).build();
+        return ApiResponse.<List<ResponseProduct>>builder().status("success").data(responseList).build();
 
     }
 

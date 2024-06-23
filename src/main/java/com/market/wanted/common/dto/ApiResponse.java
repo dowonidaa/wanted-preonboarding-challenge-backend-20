@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ApiResponse {
+public class ApiResponse<T> {
 
     private String status;
-    private Object data;
+    private T data;
     private String message;
     private String errorCode;
 }

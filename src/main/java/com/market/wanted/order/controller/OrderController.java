@@ -28,7 +28,7 @@ public class OrderController {
     @PostMapping("/add")
     public ResponseEntity<?> createOrder(@Validated @RequestBody OrderRequest order, @AuthenticationPrincipal CustomUserDetails user) {
         try {
-            ApiResponse response = orderService.createOrder(user.getUsername(), order.getProductId());
+            ApiResponse<ResponseOrderDetail> response = orderService.createOrder(user.getUsername(), order.getProductId());
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.builder().status("error").message(e.getMessage()));

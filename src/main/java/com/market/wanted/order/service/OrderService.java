@@ -32,7 +32,7 @@ public class OrderService {
     private final OrderFindRepository orderFindRepository;
 
     @Transactional
-    public ApiResponse createOrder(String username, Long productId) {
+    public ApiResponse<ResponseOrderDetail> createOrder(String username, Long productId) {
         Member buyer = memberService.findByUsername(username);
         Product findProduct = productRepository.findById(productId).orElseThrow(()->new EntityNotFoundException("상품을 못찾음"));
 
@@ -45,22 +45,22 @@ public class OrderService {
                     .product(findProduct)
                     .build();
            order.addOrderItem(orderItem);
-            return ApiResponse.builder()
-                    .data(
-                            ResponseOrderDetail.builder()
-                                    .orderStatus(order.getOrderStatus())
-                                    .orderId(order.getId())
-                                    .orderDateTime(LocalDateTime.now())
-                                    .sellerId(findProduct.getSeller().getId())
-                                    .sellerName(findProduct.getSeller().getUsername())
-                                    .buyerId(buyer.getId())
-                                    .buyerName(buyer.getUsername())
-                                    .price(orderItem.getPrice())
-                                    .productName(findProduct.getProductName())
-                                    .productId(findProduct.getId())
-                                    .isSeller(isSeller(order.getSeller().getUsername(), username))
-                                    .build()
-                    )
+
+            ResponseOrderDetail responseOrderDetail = ResponseOrderDetail.builder()
+                    .orderStatus(order.getOrderStatus())
+                    .orderId(order.getId())
+                    .orderDateTime(LocalDateTime.now())
+                    .sellerId(findProduct.getSeller().getId())
+                    .sellerName(findProduct.getSeller().getUsername())
+                    .buyerId(buyer.getId())
+                    .buyerName(buyer.getUsername())
+                    .price(orderItem.getPrice())
+                    .productName(findProduct.getProductName())
+                    .productId(findProduct.getId())
+                    .isSeller(isSeller(order.getSeller().getUsername(), username))
+                    .build();
+            return ApiResponse.<ResponseOrderDetail>builder()
+                    .data(responseOrderDetail)
                     .status("success").build();
         }
         return null;
